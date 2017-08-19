@@ -23,7 +23,12 @@
             }).then(function (data) {
                 // console.log(util.inspect(data.response, {showHidden: false, depth: null}));
                 // console.log("\n===================================================\n");
-                res.status(200).send(msg);
+
+                let response = [
+                    {"text": msg}
+                ];
+
+                res.status(200).send(response);
             }).catch(function (err) {
                 console.log("ERROR: ",err);
             });
