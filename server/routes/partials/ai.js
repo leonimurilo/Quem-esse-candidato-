@@ -9,12 +9,12 @@
             res.status(200).send("Test working");
         });
 
-        app.post("/api/message", function (req, res) {
-            let msg = req.body.message;
+        app.post("/askWatson", function (req, res) {
+            let msg = req.query.message;
             let context = req.body.context || {};
+            console.log("Message:", msg);
             if(!msg)
                 return res.status(422).send({status:422, error: "message argument is missing."});
-
 
             // must return response.output.text and response.context
             watsonConversation.sendMessage({
@@ -23,7 +23,7 @@
             }).then(function (data) {
                 // console.log(util.inspect(data.response, {showHidden: false, depth: null}));
                 // console.log("\n===================================================\n");
-                res.status(200).send("HELLO");
+                res.status(200).send(msg);
             }).catch(function (err) {
                 console.log("ERROR: ",err);
             });
