@@ -24,7 +24,7 @@
                 text:msg,
                 context
             }).then(function (data) {
-                ResponseEnhancer.handleResponse(data, req, res, deputados);
+                ResponseEnhancer.handleResponse(data.response, req, res, deputados);
             }).catch(function (err) {
                 console.log("ERROR: ",err);
             });
