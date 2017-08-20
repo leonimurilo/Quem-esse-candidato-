@@ -5,10 +5,12 @@
 
     module.exports = function(){
         return {
-            handleResponse(rawResponse, msg, res){
+            handleResponse(rawResponse, msg, res, deputados){
                 let response = [];
 
                 response.push({"text": rawResponse.response.output.text[0]});
+
+                let name = rawResponse.response.context.nomeCandidato;
 
                 try{
                     console.log(rawResponse.response);
@@ -65,9 +67,21 @@
                         });
                 }
 
-                return res.status(200).send(
-                    response
-                );
+                let query = {
+                    selector: {
+                        "Nome Parlamentar": name.toUpperCase()
+                    }
+                };
+
+                deputados.find(query).then(function (data) {
+                    console.log(data);
+                    response.push(data.docs[0]);
+                    return res.json(
+                        response
+                    );
+                }).catch(function (err) {
+                    console.log(err);
+                });
 
             }
         }

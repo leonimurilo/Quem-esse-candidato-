@@ -32,7 +32,7 @@
     app.use(bodyParser.urlencoded({extended: true}));
     app.use(express.static(path.join(__dirname + '/client/public')));
 
-    require('./server/routes/index.js')(app, watsonConversation);
+    require('./server/routes/index.js')(app, watsonConversation, deputados);
 
     app.listen(port, function () {
         console.log("Server is running on port " + port);
