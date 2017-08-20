@@ -69,7 +69,7 @@
     function buildInfo(info) {
         let r = ["👤 Dados do deputado \n"];
         candidateFields.forEach(function (field) {
-            if(field.textListed)
+            if(field.textListed && info[field.name])
                 r.push(field.icon + " " + field.name + ": " + info[field.name]);
         });
 
@@ -79,69 +79,79 @@
     module.exports = function(){
         return {
             handleResponse(rawResponse, msg, res, deputados, noticias){
-                let bubbles = [];
-                let name = rawResponse.context.nomeCandidato;
-                if(name)
-                    name = name.toUpperCase();
-                let data = rawResponse.context.dados;
-                bubbles.push(new Text(rawResponse.output.text[0]));
 
-                if(name && data){
-                    let query = {
-                        selector: {
-                            "Nome Parlamentar": name
-                        },
-                        fields: _.map(candidateFields.map(function (field) {
-                            return field.name;
-                        }))
-                    };
+                try {
+                    let bubbles = [];
+                    let name = rawResponse.context.nomeCandidato;
 
-                    deputados.find(query).then(function ({docs}) {
-                        bubbles.push(new Image(docs[0].image));
-                        bubbles.push(new Text(buildInfo(docs[0])));
+                    if(name)
+                        name = name.toUpperCase();
+                    let data = rawResponse.context.dados
 
-                        // console.log("Report", docs[0].report);
-                        bubbles.push(new Text(buildReport(docs[0].report)));
 
-                        noticias.find({
-                                "selector": {
-                                    "candidatos": {
-                                        "$elemMatch": {
-                                            "nome":  name
+                    bubbles.push(new Text(rawResponse.output.text[0]));
+
+                    if(name && data){
+                        let query = {
+                            selector: {
+                                "Nome Parlamentar": name
+                            },
+                            fields: _.map(candidateFields.map(function (field) {
+                                return field.name;
+                            }))
+                        };
+
+                        deputados.find(query).then(function ({docs}) {
+
+                            if(docs[0].image)
+                                bubbles.push(new Image(docs[0].image));
+                            bubbles.push(new Text(buildInfo(docs[0])));
+
+                            if(docs[0].report)
+                                bubbles.push(new Text(buildReport(docs[0].report)));
+
+                            noticias.find({
+                                    "selector": {
+                                        "candidatos": {
+                                            "$elemMatch": {
+                                                "nome":  name
+                                            }
                                         }
-                                    }
-                                },
-                                fields: [
-                                    "title",
-                                    "image_url",
-                                    "subtitle",
-                                    "buttons"
-                                ]
-                            }
-                        ).then(function ({docs}) {
-                            bubbles.push(new Text(" 📰 Notícias recentes: "));
-                            let elements = [];
-                            docs.forEach(function (doc) {
-                                elements.push(doc);
+                                    },
+                                    fields: [
+                                        "title",
+                                        "image_url",
+                                        "subtitle",
+                                        "buttons"
+                                    ]
+                                }
+                            ).then(function ({docs}) {
+                                bubbles.push(new Text(" 📰 Notícias recentes: "));
+                                let elements = [];
+                                docs.forEach(function (doc) {
+                                    elements.push(doc);
+                                });
+                                if(elements !== []){
+                                    let gallery = new Gallery(elements);
+                                    bubbles.push(gallery);
+                                }
+                                return res.json(
+                                    bubbles
+                                );
                             });
-                            let gallery = new Gallery(elements);
-                            bubbles.push(gallery);
+
+                        }).catch(function (err) {
+                            console.log(err);
                             return res.json(
                                 bubbles
                             );
                         });
-
-                    }).catch(function (err) {
-                        console.log(err);
-                        return res.json(
-                            bubbles
-                        );
-                    });
-                } else {
-                    return res.json(bubbles);
+                    } else {
+                        return res.json(bubbles);
+                    }
+                }catch(e){
+                    console.log(err);
                 }
-
-
             }
         }
     }
