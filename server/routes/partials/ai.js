@@ -11,10 +11,11 @@
 
         app.post("/askWatson", function (req, res) {
             let msg = req.body.message;
-            let context = req.body.context || {};
+            let firstName = req.body["first name"];
+            let context = req.body.context || {firstName};
 
             console.log("Message:", msg);
-            console.log("First name:",req.body["first name"]);
+            console.log("First name:", firstName);
 
             if(!msg)
                 return res.status(422).send({status:422, error: "message argument is missing."});
