@@ -5,7 +5,20 @@
         {name: "Partido", icon: "💼", textListed: true},
         {name: "UF", icon: "🌎", textListed: true},
         {name: "Correio Eletrônico", icon: "📬", textListed: true},
-        {name: "image", icon: "", textListed: false}
+        {name: "image", icon: "", textListed: false},
+        {name: "report", icon: "", textListed: false}
+    ];
+
+    const reportFields = [
+        {name: "Valor da última campanha", icon: "💵"},
+        {name: "Valor total de bens declarados", icon: "🏠"},
+        {name: "Votos recebidos", icon: "📠"},
+        {name: "Número de Proposições", icon: "📋"},
+        {name: "Número de PECs", icon: "💡"},
+        {name: "Processos contra o candidato", icon: "📂"},
+        {name: "Despesas - Cota Parlamentar", icon: "💳"},
+        {name: "Ranking Dep. do Atlas Político", icon: "📈"},
+        {name: "Posicionamento Ideológico", icon: "🙋"},
     ];
 
     class Image {
@@ -30,7 +43,7 @@
             }
 
         }
-    } //👤💼
+    }
 
     class Text {
         constructor(text) {
@@ -38,8 +51,23 @@
         }
     }
 
-    function buildCandidateInfo(info) {
-        let r = ["👤 Dados do deputado:"];
+    function buildReport(report) {
+        let r = ["📊 Relatório: "];
+        reportFields.forEach(function (field) {
+            if(Array.isArray(report[field.name])){
+                let text = field.icon+ " " + field.name + ":\n        - " + report[field.name].join("\n        - ");
+                r.push(text);
+            }else{
+                r.push(field.icon+ " " + field.name + ": " + report[field.name]);
+            }
+        });
+
+        console.log(r);
+        return r.join("\n");
+    }
+
+    function buildInfo(info) {
+        let r = ["👤 Dados do deputado \n"];
         candidateFields.forEach(function (field) {
             if(field.textListed)
                 r.push(field.icon + " " + field.name + ": " + info[field.name]);
@@ -51,12 +79,12 @@
     module.exports = function(){
         return {
             handleResponse(rawResponse, msg, res, deputados, noticias){
-                let response = [];
+                let bubbles = [];
                 let name = rawResponse.context.nomeCandidato;
                 if(name)
                     name = name.toUpperCase();
                 let data = rawResponse.context.dados;
-                response.push(new Text(rawResponse.output.text[0]));
+                bubbles.push(new Text(rawResponse.output.text[0]));
 
                 if(name && data){
                     let query = {
@@ -69,51 +97,48 @@
                     };
 
                     deputados.find(query).then(function ({docs}) {
-                        response.push(new Image(docs[0].image));
+                        bubbles.push(new Image(docs[0].image));
+                        bubbles.push(new Text(buildInfo(docs[0])));
 
-                        let text = buildCandidateInfo(docs[0]);
-                        response.push(new Text(text));
+                        // console.log("Report", docs[0].report);
+                        bubbles.push(new Text(buildReport(docs[0].report)));
 
                         noticias.find({
-                            "selector": {
-                                "candidatos": {
-                                    "$elemMatch": {
-                                        "nome":  name
+                                "selector": {
+                                    "candidatos": {
+                                        "$elemMatch": {
+                                            "nome":  name
+                                        }
                                     }
-                                }
-                            },
-                            fields: [
-                                "title",
-                                "image_url",
-                                "subtitle",
-                                "buttons"
-                            ],
-                            "sort": [
-                                {
-                                    "_id": "asc"
-                                }
-                            ]
-                        }).then(function ({docs}) {
-                            response.push(new Text(" 📰 Notícias recentes: "));
+                                },
+                                fields: [
+                                    "title",
+                                    "image_url",
+                                    "subtitle",
+                                    "buttons"
+                                ]
+                            }
+                        ).then(function ({docs}) {
+                            bubbles.push(new Text(" 📰 Notícias recentes: "));
                             let elements = [];
                             docs.forEach(function (doc) {
                                 elements.push(doc);
                             });
                             let gallery = new Gallery(elements);
-                            response.push(gallery);
+                            bubbles.push(gallery);
                             return res.json(
-                                response
+                                bubbles
                             );
                         });
 
                     }).catch(function (err) {
                         console.log(err);
                         return res.json(
-                            response
+                            bubbles
                         );
                     });
                 } else {
-                    return res.json(response);
+                    return res.json(bubbles);
                 }
 
 
