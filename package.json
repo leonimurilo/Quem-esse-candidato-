@@ -31,7 +31,7 @@
     "axios": "^0.16.2",
     "body-parser": "^1.16.1",
     "cfenv": "^1.0.4",
-    "cloudant": "^1.7.1",
+    "cloudant": "^1.8.0",
     "compression": "^1.6.2",
     "cookie-parser": "*",
     "dotenv": "^4.0.0",

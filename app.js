@@ -8,6 +8,7 @@
         version:process.env.CONVERSATION_VERSION,
         workspace_id: process.env.CONVERSATION_WORKSPACE
     };
+    const cloudantURL = process.env.CLOUDANT_URL;
 
     const express = require("express");
     const bodyParser = require("body-parser");
@@ -15,7 +16,17 @@
     const app = express();
     const port = process.env.PORT || process.env.VCAP_APP_PORT || 6010;
     const path = require("path");
+    const cloudant = require('cloudant')({
+        url: cloudantURL,
+        plugin: 'promises'
+    });
     const watsonConversation = require("./server/helpers/WatsonConversation")(conversationCredentials);
+
+    let deputados = cloudant.db.use("deputado");
+
+    // deputados.list().then(function (data) {
+    //     console.log(data);
+    // });
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: true}));
