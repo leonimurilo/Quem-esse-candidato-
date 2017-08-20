@@ -1,7 +1,7 @@
 (function () {
     "use strict";
 
-    const util = require("util");
+    const ResponseEnhancer = require("../../helpers/ResponseEnhancer")();
 
     module.exports = function (app, watsonConversation) {
 
@@ -10,9 +10,12 @@
         });
 
         app.post("/askWatson", function (req, res) {
-            let msg = req.query.message;
+            let msg = req.body.message;
             let context = req.body.context || {};
+
             console.log("Message:", msg);
+            console.log("First name:",req.body["first name"]);
+
             if(!msg)
                 return res.status(422).send({status:422, error: "message argument is missing."});
 
@@ -21,14 +24,8 @@
                 text:msg,
                 context
             }).then(function (data) {
-                // console.log(util.inspect(data.response, {showHidden: false, depth: null}));
-                // console.log("\n===================================================\n");
 
-                let response = [
-                    {"text": msg}
-                ];
-
-                res.status(200).send(response);
+                ResponseEnhancer.handleResponse(data, msg, res);
             }).catch(function (err) {
                 console.log("ERROR: ",err);
             });
