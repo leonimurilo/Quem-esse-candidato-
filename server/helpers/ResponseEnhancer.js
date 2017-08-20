@@ -126,12 +126,12 @@
                                     ]
                                 }
                             ).then(function ({docs}) {
-                                bubbles.push(new Text(" 📰 Notícias recentes: "));
                                 let elements = [];
                                 docs.forEach(function (doc) {
                                     elements.push(doc);
                                 });
                                 if(elements !== []){
+                                    bubbles.push(new Text(" 📰 Notícias recentes: "));
                                     let gallery = new Gallery(elements);
                                     bubbles.push(gallery);
                                 }
