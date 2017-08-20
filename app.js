@@ -23,6 +23,7 @@
     const watsonConversation = require("./server/helpers/WatsonConversation")(conversationCredentials);
 
     let deputados = cloudant.db.use("deputado");
+    let noticias = cloudant.db.use("noticias");
 
     // deputados.list().then(function (data) {
     //     console.log(data);
@@ -32,7 +33,7 @@
     app.use(bodyParser.urlencoded({extended: true}));
     app.use(express.static(path.join(__dirname + '/client/public')));
 
-    require('./server/routes/index.js')(app, watsonConversation, deputados);
+    require('./server/routes/index.js')(app, watsonConversation, deputados, noticias);
 
     app.listen(port, function () {
         console.log("Server is running on port " + port);

@@ -3,7 +3,7 @@
 
     const ResponseEnhancer = require("../../helpers/ResponseEnhancer")();
 
-    module.exports = function (app, watsonConversation, deputados) {
+    module.exports = function (app, watsonConversation, deputados, noticias) {
 
         app.get("/api/test", function (req, res) {
             res.status(200).send("Test working");
@@ -24,7 +24,7 @@
                 text:msg,
                 context
             }).then(function (data) {
-                ResponseEnhancer.handleResponse(data.response, req, res, deputados);
+                ResponseEnhancer.handleResponse(data.response, req, res, deputados, noticias);
             }).catch(function (err) {
                 console.log("ERROR: ",err);
             });
