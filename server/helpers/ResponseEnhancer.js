@@ -130,7 +130,8 @@
                                 docs.forEach(function (doc) {
                                     elements.push(doc);
                                 });
-                                if(elements !== []){
+                                console.log(elements);
+                                if(elements.length > 0){
                                     bubbles.push(new Text(" 📰 Notícias recentes: "));
                                     let gallery = new Gallery(elements);
                                     bubbles.push(gallery);
