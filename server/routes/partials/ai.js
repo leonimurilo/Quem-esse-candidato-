@@ -19,13 +19,11 @@
             if(!msg)
                 return res.status(422).send({status:422, error: "message argument is missing."});
 
-            // must return response.output.text and response.context
             watsonConversation.sendMessage({
                 text:msg,
                 context
             }).then(function (data) {
-
-                ResponseEnhancer.handleResponse(data, msg, res);
+                ResponseEnhancer.handleResponse(data, req, res);
             }).catch(function (err) {
                 console.log("ERROR: ",err);
             });

@@ -6,60 +6,63 @@
     module.exports = function(){
         return {
             handleResponse(rawResponse, msg, res){
-                let response;
+                let response = [];
 
+                response.push({"text": rawResponse.response.output.text[0]});
 
+                try{
+                    console.log(rawResponse.response);
+                    console.log(rawResponse.response.context.nomeCandidato);
+                    console.log(rawResponse.response.context.dados);
 
-                if(msg === "img"){
-                    response = [
+                }catch(e) {
+
+                }
+
+                if(rawResponse.response.context.dados){
+                    response.push(
                         {
                             "attachment": {
                                 "type": "image",
                                 "payload": {
-                                    "url": "https://pbs.twimg.com/profile_images/841704710381924353/lndULjRz.jpg"
+                                    "url": "https://rd1.com.br/wp-content/uploads/2015/09/tiririca-1.jpg"
                                 }
                             }
-                        }
-                    ];
-                } else if(msg === "gallery"){
-                    response = [    {
-                        "attachment":{
-                            "type":"template",
-                            "payload":{
-                                "template_type":"generic",
-                                "elements":[
-                                    {
-                                        "title":"Escândalo de corrupção do metrô",
-                                        "image_url":"http://www.metro.sp.gov.br/images/home/foto-trem.jpg",
-                                        "subtitle":"Metrôs de São Paulo...",
-                                        "buttons":[
-                                            {
-                                                "type":"web_url",
-                                                "url":"https://petersapparel.parseapp.com/view_item?item_id=100",
-                                                "title":"Ver mais"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "title":"Bla bla",
-                                        "image_url":"https://pbs.twimg.com/profile_images/841704710381924353/lndULjRz.jpg",
-                                        "subtitle":"Candssksdjds...",
-                                        "buttons":[
-                                            {
-                                                "type":"web_url",
-                                                "url":"https://petersapparel.parseapp.com/view_item?item_id=100",
-                                                "title":"Ver mais"
-                                            }
-                                        ]
-                                    }
-                                ]
+                        },
+                        {
+                            "attachment":{
+                                "type":"template",
+                                "payload":{
+                                    "template_type":"generic",
+                                    "elements":[
+                                        {
+                                            "title":"Escândalo de corrupção do metrô",
+                                            "image_url":"https://rd1.com.br/wp-content/uploads/2015/09/tiririca-1.jpg",
+                                            "subtitle":"Metrôs de São Paulo...",
+                                            "buttons":[
+                                                {
+                                                    "type":"web_url",
+                                                    "url":"https://petersapparel.parseapp.com/view_item?item_id=100",
+                                                    "title":"Ver mais"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "title":"Bla bla",
+                                            "image_url":"https://pbs.twimg.com/profile_images/841704710381924353/lndULjRz.jpg",
+                                            "subtitle":"Candssksdjds...",
+                                            "buttons":[
+                                                {
+                                                    "type":"web_url",
+                                                    "url":"https://petersapparel.parseapp.com/view_item?item_id=100",
+                                                    "title":"Ver mais"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
                             }
-                        }
-                    }];
-                } else {
-
-                    response = [{"text": rawResponse.response.output.text[0]}];
-
+                        });
                 }
 
                 return res.status(200).send(
